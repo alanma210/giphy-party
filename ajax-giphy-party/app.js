@@ -1,18 +1,34 @@
 console.log("Let's get this party started!");
-// document.cookie = 'name=foo; SameSite=None; Secure';
-document.cookie = 'username=John Doe';
-
-var x = document.cookie;
-console.log(x);
+const gifArea = document.querySelector('#gif-area');
 
 // GIPHY API Key: jJKChLTZUrvNifl0Pt4WFnchsZkGTOYW
-// Checkout cookie issue with Rafael
 
 async function getPicByTerms(term) {
-	const url = `https://api.giphy.com/v1/gifs/search?api_key=jJKChLTZUrvNifl0Pt4WFnchsZkGTOYW&q=${term}&limit=1&offset=0&rating=g&lang=en`;
+	const url = `https://api.giphy.com/v1/gifs/search?api_key=jJKChLTZUrvNifl0Pt4WFnchsZkGTOYW&q=${term}&offset=0&rating=g&lang=en`;
 	const res = await axios.get(url);
-	console.log(res);
-	console.log(res.data.data[0].url);
-	const img = document.querySelector('#pic');
-	img.src = res.data.data[0].url;
+	// console.log(res);
+	let numResults = res.data.data.length;
+	if (numResults) {
+		let randomIdx = Math.floor(Math.random() * numResults);
+		let newCol = document.createElement('div');
+		let newImg = document.createElement('img');
+		newImg.src = res.data.data[randomIdx].images.downsized_medium.url;
+		newCol.append(newImg);
+		gifArea.append(newCol);
+	}
 }
+
+const form = document.querySelector('#searchform');
+form.addEventListener('submit', function (e) {
+	const input = document.querySelector('#searchTerm');
+	e.preventDefault();
+	getPicByTerms(input.value);
+});
+
+const removeBtn = document.querySelector('#remove');
+removeBtn.addEventListener('click', function (e) {
+	const $gifArea = $('#gif-area');
+	$gifArea.empty();
+	const input = document.querySelector('#searchTerm');
+	input.value = '';
+});
